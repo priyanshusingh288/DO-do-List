@@ -1,11 +1,12 @@
-from datetime import datetime
-from typing import List, Optional
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from typing import Optional,List
+from datetime import datetime
 
 import models
-from database import get_db
+from database import engine, Base, get_db
 from schemas import TaskCreate, TaskResponse
 
 app = FastAPI()
