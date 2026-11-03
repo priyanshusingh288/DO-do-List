@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Optional,List
 from datetime import datetime
+import schemas,models
 
 import models
 from database import engine, Base, get_db
@@ -58,3 +59,19 @@ async def delete_task(task_id: int, db: AsyncSession = Depends(get_db)):
     await db.delete(task)
     await db.commit()
     return None
+
+@app.patch("/tasks/{task_id}/toggle",response_model=schemas.TaskResponse)
+async def toggle_tasks(task_id:int,db: AsyncSession = Depends(get_db)):
+    stmt = select(models.Task).where(models.Task.id == task_id)
+    result = await db.execute(stmt)
+    toggle_task = result.scalars().first()
+
+    if not toggle_task:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail = f"current task with {id} cant be founf out")
+
+    toggle_task.is_completed = not toggle_task.is_completed
+    
+    await db.commit()
+    await db.refresh(toggle_task)
+    return toggle_task
