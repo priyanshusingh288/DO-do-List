@@ -42,4 +42,19 @@ async def get_tasks(
     result = await db.execute(stmt)
     tasks =  result.scalars().all()
     return tasks        
-                          
+
+@app.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_task(task_id: int, db: AsyncSession = Depends(get_db)):
+    stmt = select(models.Task).where(models.Task.id == task_id)
+    result = await db.execute(stmt)
+    task = result.scalars().first()
+
+    if not task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="Task not found"
+        )
+
+    await db.delete(task)
+    await db.commit()
+    return None
