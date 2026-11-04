@@ -75,3 +75,28 @@ async def toggle_tasks(task_id:int,db: AsyncSession = Depends(get_db)):
     await db.commit()
     await db.refresh(toggle_task)
     return toggle_task
+
+@app.patch("/tasks/{task_id}", response_model=schemas.TaskResponse)
+async def update_task(
+    task_id: int, 
+    task_update: schemas.TaskUpdate, 
+    db: AsyncSession = Depends(get_db)
+):
+    stmt = select(models.Task).where(models.Task.id == task_id)
+    result = await db.execute(stmt)
+    task = result.scalars().first()
+
+    if not task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="Task not found"
+        )
+
+    update_data = task_update.model_dump(exclude_unset=True)
+
+    for key, value in update_data.items():
+        setattr(task, key, value)
+
+    await db.commit()
+    await db.refresh(task)
+    return task

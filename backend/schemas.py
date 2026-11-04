@@ -22,3 +22,10 @@ class TaskResponse(TaskCreate):
     created_at:datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+class TaskUpdate(BaseModel):
+    title:str | None = None
+    note:str | None = None
+    start_time:datetime | None = None
+    end_time:datetime | None = None
+    remind:datetime |None = None
