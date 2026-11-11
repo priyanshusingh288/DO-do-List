@@ -1,6 +1,6 @@
 from datetime import datetime
-from sqlalchemy import Integer, String, Text, Boolean, DateTime, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Integer, String, Text, Boolean, DateTime, func,ForeignKey,Column,DATETIME
+from sqlalchemy.orm import Mapped, mapped_column,relationship
 from database import Base
 
 class Task(Base):
@@ -21,3 +21,13 @@ class Task(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
+
+class users(Base):
+      __tablename__ = "users"
+
+      id = Column(Integer,Primary_key = True, index = True)
+      email = Column(String,primary_key = True,unique = True,nullable=False)
+      hashed_password = Column(String, nullable = False)
+      is_active = Column(Boolean,nullable = True)
+
+      Task = relationship("Task",back_populates="owner",cascade="all, delete-orphan")
