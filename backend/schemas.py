@@ -1,5 +1,6 @@
-from pydantic import BaseModel,model_validator,ConfigDict
+from pydantic import BaseModel,model_validator,ConfigDict,EmailStr
 from datetime import datetime
+from typing import Optional
 
 class TaskCreate(BaseModel):
     title:str
@@ -29,3 +30,22 @@ class TaskUpdate(BaseModel):
     start_time:datetime | None = None
     end_time:datetime | None = None
     remind:datetime |None = None
+
+class Usercreate(BaseModel):
+    email:EmailStr
+    password:str
+
+class UserResponse(BaseModel):
+    id:int
+    email:EmailStr
+    is_active:bool
+
+    class config:
+        from_attributes :True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    email: Optional[str] = None
